@@ -18,9 +18,11 @@ const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("./entities/user.entity");
 const typeorm_2 = require("typeorm");
 const argon2 = require("argon2");
+const jwt_1 = require("@nestjs/jwt");
 let UserService = class UserService {
-    constructor(userRepository) {
+    constructor(userRepository, jwtService) {
         this.userRepository = userRepository;
+        this.jwtService = jwtService;
     }
     async create(createUserDto) {
         const existUser = await this.userRepository.findOne({
@@ -35,13 +37,18 @@ let UserService = class UserService {
             email: createUserDto.email,
             password: await argon2.hash(createUserDto.password),
         });
-        return { user };
+        const token = this.jwtService.sign({ email: createUserDto.email });
+        return { user, token };
+    }
+    async findOne(email) {
+        return await this.userRepository.findOne({ where: { email } });
     }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        jwt_1.JwtService])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

@@ -8,5 +8,6 @@ export declare class UserController {
             email: string;
             password: string;
         } & import("./entities/user.entity").User;
+        token: string;
     }>;
 }
